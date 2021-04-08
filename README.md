@@ -73,15 +73,21 @@ Git: https://git-scm.com/download/
 
 ### INSTALLAZIONE DI BRISCOLA IN 5 ONLINE
 Aprire un terminale e digitare i seguenti comandi:
+```
 git clone https://github.com/giorgiatedaldi/briscola_in_5_online
 cd briscola_in_5_online/client/
 npm install socket.io-client
 cd ../server/
 npm install express
 npm install socket.io
+```
 
 ### AVVIARE IL GIOCO
+```
 node server.js
+```
 Aprire un secondo terminale e seguire i seguenti comandi:
+```
 cd briscola_in_5_online/client/
 npm start
+```
