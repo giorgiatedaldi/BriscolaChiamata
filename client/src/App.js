@@ -38,8 +38,12 @@ class App extends Component {
       handsWinners:[], //It contains all hands' winners
       requiredLastHand: [], //Last hand that had to be shown, requested by the player
       buttonChat:false, //True once every client has received its cards
-      notification:false //True if there are unread messages
+      notification:false, //True if there are unread messages
+      rules:false, //True if the rules have to be displayed
+      shuffle:false //True if player decides to order cards
     };
+    document.getElementById("Rules").style.visibility="hidden";
+    
   }
   
   /**
@@ -56,22 +60,9 @@ class App extends Component {
       else{
         nick = document.getElementById("Username").value;
       }
-      if (nick.length > 0){
-        this.setState({
-          color: "green", 
-          nickname: nick, 
-          waitingForRestart: false});
-        sock.emit('receiveCards', sock.id, nick);
-      }
-      else{
-        this.setState({
-          color: "green", 
-          nickname: sock.id, 
-          waitingForRestart: false});
-        sock.emit('receiveCards', sock.id, sock.id);
-      }
-      
 
+      
+   
       //giveCard HANDLER
       //Setting player's card and informing server it's ready to send offers
       sock.removeAllListeners('giveCards');
@@ -191,7 +182,7 @@ class App extends Component {
       sock.removeAllListeners('scores');
       sock.on("scores", (totScoreCallers, totScoreOpponents, matchScores) => {
         this.setState({
-          teamScore: [totScoreCallers, totScoreOpponents], 
+          teamsScore: [totScoreCallers, totScoreOpponents], 
           matchScores: matchScores});
       });
 
@@ -233,13 +224,15 @@ class App extends Component {
       //DisplayDeck HANDLER
       sock.removeAllListeners('DisplayDeck');
       sock.on("DisplayDeck", (ID) => {
-        let tmp=this.state.handsWinners;
-        for (let i=0; i< this.state.myMatchOrder.length; i++){
-          if (this.state.myMatchOrder[i]===ID){
-            tmp.push(ID);
+        if(this.state.hand!==null&&this.state.hand.length===1){
+          let tmp=this.state.handsWinners;
+          for (let i=0; i< this.state.myMatchOrder.length; i++){
+            if (this.state.myMatchOrder[i]===ID){
+              tmp.push(ID);
+            }
           }
-        }
-        this.setState({deck:tmp});
+          this.setState({handsWinners:tmp});
+      }
         
       });
 
@@ -265,6 +258,23 @@ class App extends Component {
       sock.on("displayLastHand", (lastHand) => {
         this.setState({requiredLastHand: lastHand});
       });
+
+      if (nick.length > 0){
+        this.setState({
+          color: "green", 
+          nickname: nick, 
+          waitingForRestart: false});
+        sock.emit('receiveCards', sock.id, nick);
+      }
+      else{
+        this.setState({
+          color: "green", 
+          nickname: sock.id, 
+          waitingForRestart: false});
+        sock.emit('receiveCards', sock.id, sock.id);
+      }
+
+      
     }
   }
   
@@ -311,11 +321,13 @@ class App extends Component {
         this.setState({
           everybodyReady: true
         });
+       
       });
 
       //gameRestart HANDLER
       socket.removeAllListeners('gameReset');
       socket.on("gameReset", (cause) => {
+        this.buttonBack();
         this.setState({
           color: 'rgb(145, 208, 246)',
           cards: null,
@@ -331,7 +343,7 @@ class App extends Component {
           hand: [],
           handIds: [],
           matchIsOver: false,
-          teamScore: null,
+          teamsScore: null,
           matchScores: null,
           waitingForRestart: false,
           handOrder: null,
@@ -339,13 +351,15 @@ class App extends Component {
           myNicknamesOrder: null,
           currentAuction:[],
           messages:[],
-          deck:[],
+          handsWinners:[],
           requiredLastHand: [],
           buttonChat:false,
-          notification:false
+          notification:false,
+          shuffle:false
         });
       });
       this.setState({priv_socket: socket});
+      document.getElementById("Rules").style.visibility="hidden";
     });
   }
   
@@ -419,6 +433,7 @@ class App extends Component {
    * Method called to restart a match once one is over and players ask to play again
    */
   restartMatch(){
+    this.buttonBack();
     this.state.priv_socket.emit("askForRestart");
     this.setState({
       color: 'rgb(145, 208, 246)',
@@ -435,17 +450,18 @@ class App extends Component {
       hand: [],
       handIds: [],
       matchIsOver: false,
-      teamScore: null,
+      teamsScore: null,
       waitingForRestart: true,
       handOrder: null, 
       myMatchOrder: null,
       myNicknamesOrder: null,
       currentAuction:[],
       messages:[],
-      deck:[],
+      handsWinners:[],
       requiredLastHand: [],
       buttonChat:false,
-      notification:false
+      notification:false,
+      shuffle:false
     });
     this.state.priv_socket.removeAllListeners("okToRestart");
     this.state.priv_socket.on("okToRestart", () => this.setReady());
@@ -545,10 +561,40 @@ class App extends Component {
   }
 
   /**
+   * Methods to order cards according to types and values
+   */
+  shuffleCards(){
+    let cards=this.state.cards;
+    let temp = [];
+    let allCards=[1,3,10,9,8,7,6,5,4,2];
+    let types=["Denari","Coppe","Spade","Bastoni"];
+    let scores=[11,10,4,3,2,0,0,0,0,0];
+    let tot=[];
+
+    for (let i=0;i<types.length;i++){
+      for (let j=0;j<allCards.length;j++){
+        temp.push(types[i]);
+        temp.push(allCards[j]);
+        temp.push(scores[j]); 
+      }
+    }
+
+    for(let i=0;i<(temp.length)/3;i++){
+      for(let c of cards){
+        if(c['value']===temp[3*i+1] && c['type']===temp[3*i]){
+          tot.push(c);
+        }
+      }
+    }
+    
+    this.setState({cards:tot, shuffle:true});
+  }
+
+  /**
    * Render of chat button
    */
   renderButtonChat(){
-    if(!this.state.buttonChat && !this.state.matchIsOver && this.state.cards!==null && this.state.allNicknames!==null && !this.state.waitingForRestart){
+    if(!this.state.buttonChat && !this.state.matchIsOver && this.state.cards!==null && this.state.allNicknames!==null && !this.state.waitingForRestart && this.state.myNicknamesOrder!==null){
       return (<button id="ShowChat" onClick={() => this.showChat()}>CHAT</button>);
     }
     else{
@@ -560,7 +606,7 @@ class App extends Component {
    * Render of notifications' symbol
    */
   renderNotification(){
-    if(this.state.notification && !this.state.buttonChat && !this.state.matchIsOver){
+    if(this.state.notification && !this.state.buttonChat && !this.state.matchIsOver && this.state.cards!==null && this.state.allNicknames!==null && !this.state.waitingForRestart && this.state.myNicknamesOrder!==null){
       return(<div id="Notification">!</div>);
     }
     return null;
@@ -576,7 +622,7 @@ class App extends Component {
       let c=[];
       let index=null;
       let colors=["#fc0808","#fff500","#29a2fe","#fb7ef4","#fc9608"];
-      if(this.state.cards!==null && !this.state.matchIsOver && this.state.allNicknames!==null && this.state.myOrderNicknames!==null) {
+      if(this.state.cards!==null && !this.state.matchIsOver && this.state.allNicknames!==null && this.state.myNicknamesOrder!==null) {
         for (let i=0;i<this.state.messages.length; i++){
           //Finding the position of the message's sender to assign him the right color
           index = this.state.myNicknamesOrder.indexOf(this.getNickname(this.state.messages[i][0]));
@@ -623,20 +669,48 @@ class App extends Component {
   renderCards(){
     let myCards = this.state.cards;
     let cards = null;
-    if (myCards !== null && this.state.myTurn && this.state.briscola!==null && this.state.briscola.length===3){
+    //Playable cards if they are not ordered
+    if (myCards !== null && this.state.myTurn && this.state.briscola!==null && this.state.briscola.length===3 && this.state.shuffle){
       let entries = myCards.map((c)=> 
-        <button id="CardsInUse" onClick={() => this.playCard(c)} >
+        <button id={"CardsInUse"+ myCards.indexOf(c)} onClick={() => this.playCard(c)} >
           <img src = {process.env.PUBLIC_URL+'/Cards/'+c['type']+'_'+c['value']+'.png'} cards={c} width="100%" alt="CardIMG" ></img>
         </button>);
         cards = <div id="MyCards">{entries}</div>;
     }
-    else if (myCards !== null ){
+    //Playable cards if they are ordered
+    else if (myCards !== null && this.state.myTurn && this.state.briscola!==null && this.state.briscola.length===3){
       let entries = myCards.map((c)=> 
-        <button id="CardsNotInUse" onClick={() => this.playCard(c)} >
+        <button id={"CardsInUse"} onClick={() => this.playCard(c)} >
+          <img src = {process.env.PUBLIC_URL+'/Cards/'+c['type']+'_'+c['value']+'.png'} cards={c} width="100%" alt="CardIMG" ></img>
+        </button>);
+        cards = <div id="MyCards">{entries}</div>;
+    }
+    //Unplayable cards if they are not ordered
+    else if(myCards !== null && this.state.shuffle){
+      let entries = myCards.map((c)=> 
+        <button id={"CardsShufflingNotInUse"+myCards.indexOf(c)} >
           <img src = {process.env.PUBLIC_URL+'/Cards/'+c['type']+'_'+c['value']+'.png'} cards={c} width="100%" alt="CardIMG"></img>
         </button>);
         cards = <div id="MyCards">{entries}</div>;
     } 
+    else if (myCards !== null){
+          //Giving card unplayable to players until the auction's over
+          if (this.state.briscola===null) {
+            let entries = myCards.map((c)=> 
+            <button id={"CardsNotInUse"+myCards.indexOf(c)} >
+              <img src = {process.env.PUBLIC_URL+'/Cards/'+c['type']+'_'+c['value']+'.png'} cards={c} width="100%" alt="CardIMG"></img>
+            </button>);
+            cards = <div>{entries}<div id="CC"></div></div>;
+          }
+          //Unplayable cards if they are ordered
+          else {
+            let entries = myCards.map((c)=> 
+            <button id="CardsNotInUseNotStart" >
+              <img src = {process.env.PUBLIC_URL+'/Cards/'+c['type']+'_'+c['value']+'.png'} cards={c} width="100%" alt="CardIMG"></img>
+            </button>);
+            cards = <div id="MyCards">{entries}</div>;  
+          }
+    }
     else {
       if (this.state.matchIsOver){
         cards = <div id="MatchIsOver">Partita terminata</div>
@@ -788,12 +862,12 @@ class App extends Component {
       if (this.state.restartReason === "playerDisconnected" && !this.state.everybodyReady){
         rReason = <div id="Disconnected"><p>La partita deve ricominciare perchè uno dei giocatori si è disconnesso</p></div>; 
       }
-      else if (this.state.restartReason === "playerDisconnected" && !this.state.everybodyReady){
-        rReason = <div id="Passed"><p>La partita deve ricominciare perchè tutti hanno passato</p></div>;
-      }
     }
     else{
       readyButton = <button id="Ready" onClick={() => this.setReady()}>GIOCA</button>;
+      if (this.state.restartReason === "everybody passed"){
+        rReason = <div id="Passed"><p>La partita deve ricominciare perchè tutti hanno passato</p></div>;
+      }
     }
     return [readyButton, rReason]
   }
@@ -804,9 +878,9 @@ class App extends Component {
   renderDeck(){
     let index;
     let d=[];
-    if(this.state.handsWinners!==null && this.state.handsWinners.length>0 && !this.state.matchIsOver && this.state.cards!==null){
+    if(this.state.handsWinners!==null && this.state.handsWinners.length>0 && !this.state.matchIsOver && this.state.cards!==null && this.state.myMatchOrder!==null){
       for(let i=0; i<this.state.handsWinners.length; i++){
-        //Displaying the card's back near all players who won at leat one hand
+        //Displaying the card's back near all players who won at least one hand
         index = this.state.myMatchOrder.indexOf(this.state.handsWinners[i]);
         let idLastHand = this.state.myMatchOrder[index];
         d.push(<img id={"Deck"+index} onMouseOver={() => this.showLastHand(idLastHand)} onMouseOut={() => this.hideLastHand()} src = {process.env.PUBLIC_URL+'/Cards/deck.png'} alt = "deckIMG"></img>);
@@ -995,7 +1069,7 @@ class App extends Component {
   }
 
   /**
-   * Restart button render
+   * Restart button restart
    */
   renderRestartButton(){
     let restartButton = null;
@@ -1015,9 +1089,48 @@ class App extends Component {
     if (this.state.cards===null && !this.state.matchIsOver){
       return(<h1 id="MainTitle"><strong>BRISCOLA IN 5 ONLINE</strong></h1>);
     }
-    else {
-      return(<p id="LittleTitle">BRISCOLA IN 5 ONLINE</p>);
+  }
+
+  /**
+   * Render button to order cards
+   */
+  renderShuffleButton(){
+    if (this.state.cards!==null&&this.state.cards.length>1&&!this.state.matchIsOver&&!this.state.shuffle){
+      return (<button id="ShuffleButton" onClick={()=>this.shuffleCards()}>Ordina carte</button>);
     }
+    return (<div></div>);
+  }
+
+  /**
+   * Render the game's rules 
+   */
+  renderButtonRules(){
+    let button=null;
+    if (!this.state.rules){
+      button=<button id="ButtonRules" onClick={()=>this.buttonRules()}>REGOLE</button>
+    }
+    else{
+      button=<button id="ButtonBack" onClick={()=>this.buttonBack()}>CHIUDI</button>
+    }
+    return button;
+  }
+
+  /**
+   * Shows rules
+   */
+  buttonRules(){
+    this.setState({rules:true});
+    document.getElementById("Rules").style.visibility="visible";
+    document.getElementById("Rules").style.top="7%";
+    document.getElementById("Rules").style.left="66%";
+  }
+
+  /**
+   * Hides rules
+   */
+  buttonBack(){
+    this.setState({rules:false});
+    document.getElementById("Rules").style.visibility="hidden";
   }
 
   /**
@@ -1042,6 +1155,7 @@ class App extends Component {
    */
   render() {
     document.body.style.backgroundColor= this.state.color;
+    
     let title=this.renderTitle();
     let id = this.renderDisconnectedServer();
     let uname = this.renderUnameSelector();
@@ -1060,6 +1174,8 @@ class App extends Component {
     let lastHand = this.renderLastHand();
     let chatButton=this.renderButtonChat();
     let notification=this.renderNotification();
+    let buttonRules=this.renderButtonRules();
+    let shuffleButton=this.renderShuffleButton();
 
     return (
       <div style={{ textAlign: "center"}} id="MainBody" width="100%">
@@ -1082,8 +1198,10 @@ class App extends Component {
         {lastHand}
         {chatButton}
         {notification}
+        {buttonRules}
+        {shuffleButton}
       </div>
-    )
+    );
   }
 }
 export default App;
