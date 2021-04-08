@@ -4,7 +4,6 @@ import './App.css';
 class App extends Component {
   /**
      * Constructor
-     * 
    */
   constructor() {
     super();
@@ -64,7 +63,6 @@ class App extends Component {
       }
 
       
-   
       //giveCards HANDLER
       //Setting player's cards and informing server he's ready to send offers
       sock.removeAllListeners('giveCards');
