@@ -1,4 +1,4 @@
-# Briscola in 5 online
+# BRISCOLA IN 5 ONLINE
 Il gioco Briscola in 5 (o briscola a chiamata) è una variante della Briscola. Le regole di base per la vincita delle diverse mani sono le stesse del classico gioco, la variante in cinque, però, si differenzia  principalmente per l’introduzione di una parte iniziale chiamata “**asta**”, durante la quale il giocatore che fa la migliore offerta (“**comandante**”) sceglie quella che sarà la briscola. I giocatori vengono quindi divisi in due squadre: quella “**chiamante**”, composta da comandante ed eventuale “**socio**” (il giocatore che possiede la carta chiamata), e quella “**avversaria**”, di cui fanno parte tutti gli altri giocatori.
 
 ## INSTALLAZIONE DEL GIOCO
