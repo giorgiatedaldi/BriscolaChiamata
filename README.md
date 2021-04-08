@@ -20,6 +20,7 @@ npm install socket.io
 
 ### AVVIARE IL GIOCO
 ```
+cd briscola_in_5_online/server/
 node server.js
 ```
 Aprire un secondo terminale e seguire i seguenti comandi:
