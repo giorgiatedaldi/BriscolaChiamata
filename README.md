@@ -1,74 +1,9 @@
-# briscola_in_5_online
-BRISCOLA IN 5 ONLINE
-INTRODUZIONE
-Le regole di base per la vincita delle diverse mani sono le stesse della classica Briscola in quattro, la variante in cinque, però, si differenzia  principalmente per l’introduzione di una parte iniziale chiamata “asta”, durante la quale il giocatore che fa la migliore offerta (“comandante”) sceglie quella che sarà la briscola. I giocatori vengono quindi divisi in due squadre: quella “chiamante”, composta da comandante ed eventuale “socio” (il giocatore che possiede la carta chiamata), e quella “avversaria”, di cui fanno parte tutti gli altri giocatori.
-
-ASTA
-Il mazziere distribuisce otto carte a testa, in senso antiorario, partendo dal giocatore alla sua destra. I giocatori, a questo punto, esaminano le loro carte, con lo scopo di valutare quale sia il seme in cui risultano più forti, e se convenga chiamare una delle carte “mancanti” di quel seme.
- 
-Esempio:
-Il seme dominante del giocatore in questione è Denari. Il caso con maggiori probabilità di vincita sarebbe quello di chiamare il Tre, in quanto è la briscola più forte tra quelle mancanti al giocatore, il secondo miglior caso sarebbe quello di chiamare il Cavallo, e così via. Il giocatore, se in possesso di molte briscole, può decidere anche di chiamare una delle carte tra quelle possedute (“chiamata in mano”), cosciente, però, di essere in squadra da solo.
-Durante l’asta, quindi, a turno, ogni giocatore ha la possibilità di “chiamare” (senza specificare il seme) o di “passare”: l’asta procede in senso antiorario ed in modo decrescente, cioè si possono chiamare solo carte progressivamente più basse secondo l’ordine: Asso, Tre, Re, Cavallo, Fante, Sette, Sei, Cinque, Quattro, Due. Essendo il Due la carta più bassa chiamabile, se più giocatori risultano essere intenzionati nel proseguimento dell’asta, l’unica possibilità è quella di alzare il punteggio di vittoria: per vincere non sarà più necessario arrivare a 60 ma al nuovo punteggio “offerto”. 
- 
-Esempio:
-
-Il giocatore in questione, sta dichiarando che, la squadra chiamante, dovrà arrivare ad almeno 64 punti per vincere. I giocatori che passano, invece, vengono esclusi dal proseguimento dell’asta. Quest’ultima termina nel momento in cui tutti i giocatori, tranne uno, il futuro comandante, passano. Una volta che l’asta è terminata, il comandante dichiara pubblicamente il seme della briscola.
-
-SVOLGIMENTO DEL GIOCO
-Il gioco comincia e procede secondo le regole della Briscola, partendo dal giocatore alla destra del mazziere, a prescindere dal vincitore dell’asta, con la differenza che le due squadre non saranno note finché il socio non si sarà rivelato giocando la carta chiamata, oppure, adottando un comportamento di gioco che evidenzi il suo stato. 
-
-GESTIONE DEI PUNTEGGI
-Una volta che la partita è finita, vengono calcolati i punti totali di entrambe le squadre. Il match risulta vinto dalla squadra chiamante se sono stati realizzati almeno 60 punti, o nel caso di chiamata a Due, i punti stabiliti durante l’asta. 
-Il punteggio generale attribuito a ciascun giocatore dipende strettamente da questi ultimi. 
-Nel caso in cui una delle due squadre realizzi tutti e 120 i punti, si parla di “volata”.
-Distinguiamo le seguenti casistiche in caso di vittoria della squadra chiamante:
+# Briscola_in_5_online
+Il gioco Briscola in 5 (o briscola a chiamata) è una variante della Briscola. Le regole di base per la vincita delle diverse mani sono le stesse del classico gioco, la variante in cinque, però, si differenzia  principalmente per l’introduzione di una parte iniziale chiamata “asta”, durante la quale il giocatore che fa la migliore offerta (“comandante”) sceglie quella che sarà la briscola. I giocatori vengono quindi divisi in due squadre: quella “chiamante”, composta da comandante ed eventuale “socio” (il giocatore che possiede la carta chiamata), e quella “avversaria”, di cui fanno parte tutti gli altri giocatori.
 
 
-
-Comandante
-Socio
-Altri giocatori (x3)
-Partita normale
-+2
-+1
--1
-2 a 70 punti
-+4
-+2
--2
- 2 a 80 punti
-+6
-+3
--3
-Volata
-+8
-+4
--4
-
-
-Nel caso in cui il comandante si chiami in mano i punteggi variano nel seguente modo:
-
-
-Comandante
-Altri giocatori (x4)
-Partita normale
-+4
--1
-2 a 70 punti
-+8
--2
- 2 a 80 punti
-+12
--3
-Volata
-+16
--4
-
-
-Nel caso in cui, invece, a vincere sia la squadra avversaria, tutti i punteggi precedenti sono di segno opposto.
-
-SPECIFICHE E FUNZIONALITÀ
-CONNESSIONE
+## SPECIFICHE E FUNZIONALITÀ
+# CONNESSIONE
 Il server è in ascolto e rimane in attesa della connessione di client, che devono essere almeno 5. Nel caso in cui ne risultino di più, i client dal sesto in avanti vengono disconnessi, mentre per gli altri può iniziare la partita.
 
 A questo punto ogni client può inserire un nickname altrimenti questo sarà settato all’ID della sua socket. Alla ricezione dei primi 5 giocatori il server genera le carte per ciascun giocatore, ma le distribuisce solo dopo che i client premono il pulsante gioca.
