@@ -1,6 +1,32 @@
 # Briscola_in_5_online
 Il gioco Briscola in 5 (o briscola a chiamata) è una variante della Briscola. Le regole di base per la vincita delle diverse mani sono le stesse del classico gioco, la variante in cinque, però, si differenzia  principalmente per l’introduzione di una parte iniziale chiamata “asta”, durante la quale il giocatore che fa la migliore offerta (“comandante”) sceglie quella che sarà la briscola. I giocatori vengono quindi divisi in due squadre: quella “chiamante”, composta da comandante ed eventuale “socio” (il giocatore che possiede la carta chiamata), e quella “avversaria”, di cui fanno parte tutti gli altri giocatori.
 
+## INSTALLAZIONE DEL GIOCO
+### REQUISITI
+Per poter utilizzare “Briscola in 5 online” è prima di tutto necessario installare:
+- [Node.js](https://nodejs.org/it/download/) (Installer)
+- [Git](https://git-scm.com/download/)
+
+### INSTALLAZIONE DI BRISCOLA IN 5 ONLINE
+Aprire un terminale e digitare i seguenti comandi:
+```
+git clone https://github.com/giorgiatedaldi/briscola_in_5_online
+cd briscola_in_5_online/client/
+npm install socket.io-client
+cd ../server/
+npm install express
+npm install socket.io
+```
+
+### AVVIARE IL GIOCO
+```
+node server.js
+```
+Aprire un secondo terminale e seguire i seguenti comandi:
+```
+cd briscola_in_5_online/client/
+npm start
+```
 
 ## SPECIFICHE E FUNZIONALITÀ
 ### CONNESSIONE
@@ -90,30 +116,3 @@ Se dovesse verificarsi la disconnessione di un qualsiasi giocatore, durante tutt
 Durante il corso di tutta la partita è sempre possibile visualizzare le regole del gioco, premendo l’apposito bottone in alto a destra.
 
 ![Regolamento](readme_images/17.png)
-
-## INSTALLAZIONE DEL GIOCO
-### REQUISITI
-Per poter utilizzare “Briscola in 5 online” è prima di tutto necessario installare:
-- [Node.js](https://nodejs.org/it/download/) (Installer)
-- [Git](https://git-scm.com/download/)
-
-### INSTALLAZIONE DI BRISCOLA IN 5 ONLINE
-Aprire un terminale e digitare i seguenti comandi:
-```
-git clone https://github.com/giorgiatedaldi/briscola_in_5_online
-cd briscola_in_5_online/client/
-npm install socket.io-client
-cd ../server/
-npm install express
-npm install socket.io
-```
-
-### AVVIARE IL GIOCO
-```
-node server.js
-```
-Aprire un secondo terminale e seguire i seguenti comandi:
-```
-cd briscola_in_5_online/client/
-npm start
-```
