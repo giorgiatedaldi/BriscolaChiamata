@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import './App.css';
 class App extends Component {
-
+  /**
+     * Constructor
+     * 
+   */
   constructor() {
     super();
     this.all_cards = [1,3,10,9,8,7,6,5,4,2];
