@@ -119,5 +119,5 @@ Durante il corso di tutta la partita è sempre possibile visualizzare le regole 
 ![Regolamento](readme_images/17.png)
 
 ## AUTORI
-- [Giorgia Tedaldi](giorgia.tedaldi@studenti.unipr.it)
-- [Martina Frati](martina.frati1@studenti.unipr.it)
+- Giorgia Tedaldi: giorgia.tedaldi@studenti.unipr.it
+- Martina Frati: martina.frati1@studenti.unipr.it
