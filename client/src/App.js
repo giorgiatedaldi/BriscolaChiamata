@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import './App.css';
-
+//vedi changes???
 class App extends Component {
 
   constructor() {
@@ -11,22 +11,22 @@ class App extends Component {
     this.state = {
       endpoint: "localhost:4001",
       color: 'rgb(145, 208, 246)',
-      cards: null, //player's card
-      priv_socket: null, //player's socket
-      available_card_values:[], //cards available for the auction
-      myTurn: false, //indicates if it's the player's turn
-      hasPassed: false, //indicates if it's the player's passed
+      cards: null, //Player's card
+      priv_socket: null, //Player's socket
+      available_card_values:[], //Cards available for the auction
+      myTurn: false, //Indicates if it's the player's turn
+      hasPassed: false, //Indicates if the player has passed
       auctionResult: [], //It contains player's id who won the auction, card's value and points
       winningPts: 60, //Points to win by default are 60
       briscola: null, //It contains card's value, player's id who won the auction and card's value
       restartReason: null, //Reason of restarting the match
       everybodyReady: false, //True if 5 clients are connected
-      scoreDeck: [], //Player's deck: contains all hands won by the player
+      scoreDeck: [], //Player's deck: it contains all the won hands by the player
       hand: [], //Everytime a player plays a card, this one is inserted in the array
       handIds: [], //It contains the players' id who are playing cards, in order
       matchIsOver: false, //Indicates the end of a match
       teamsScore: null,  //It contains 2 array, each one contains information about the final scores of players of both teams
-      nickname: null, //player's nickname
+      nickname: null, //Player's nickname
       allNicknames: null, //Map with player's id (key) and nickname (value)
       matchScores: null, //Scores of the 'general' match
       waitingForRestart: false, //True once the player agrees to play again
@@ -36,8 +36,8 @@ class App extends Component {
       currentAuction:[], //Actual winning auction
       messages:[], //It contains all messages
       handsWinners:[], //It contains all hands' winners
-      requiredLastHand: [], //Last hand that had to be shown, requested by the player
-      buttonChat:false, //True once every client has received its cards
+      requiredLastHand: [], //Last hand that has to be shown, if requested by the player
+      buttonChat:false, //True if clicked, to open the chat 
       notification:false, //True if there are unread messages
       rules:false, //True if the rules have to be displayed
       shuffle:false //True if player decides to order cards
@@ -63,8 +63,8 @@ class App extends Component {
 
       
    
-      //giveCard HANDLER
-      //Setting player's card and informing server it's ready to send offers
+      //giveCards HANDLER
+      //Setting player's cards and informing server he's ready to send offers
       sock.removeAllListeners('giveCards');
       sock.on('giveCards', (yourCards) => {
         this.setState({
@@ -103,7 +103,7 @@ class App extends Component {
         let cAuction=[];
         cAuction.push(currentID, currentOffer,points);
         
-        //Updating the available card for the auction
+        //Updating the available cards for the auction
         this.setState({
           available_card_values: tmp, 
           currentAuction: cAuction
@@ -128,7 +128,7 @@ class App extends Component {
       });
 
       //setBriscola HANDLER
-      //Updating the briscola once the player who called choose briscola's type
+      //Updating the briscola once the player who called chooses briscola's type
       sock.removeAllListeners('setBriscola');
       sock.on("setBriscola", (value, ID, type) => {
         this.setState({
