@@ -92,7 +92,7 @@ class ServerBriscola {
       this.restartRequests = 0;
       this.finalResults= new Map();
     
-      if (this.playersPassed<5) {
+      if (this.playersPassed.length<5) {
       this.playerNicknames= new Map();
       this.matchScores = new Map();
       this.differentNickname=[1,2,3,4];
@@ -139,8 +139,8 @@ class ServerBriscola {
         this.sockets.set(socket.id, socket);
         
         //To memorize scores' state for new matches
-        for (let i = 0; i < this.socketID.length; i++) {
-          this.matchScores.set(this.socketID[i], 0);
+        for (let id of this.sockets.keys()) {
+          this.matchScores.set(id, 0);
         }
         this.setUpGame();
       }
@@ -159,6 +159,10 @@ class ServerBriscola {
   setUpGame() {
     if (this.sockets.size==5)
     {
+      this.socketID=[];
+      for (let sock of this.sockets.keys()){
+        this.socketID.push(sock);
+      }
       console.log("\n------------NEW GAME STARTED-------------\n");
       this.gameStared = true;
       var match = new game(this.socketID);
@@ -300,7 +304,11 @@ class ServerBriscola {
    */
   shareNicknames(){
     console.log("Emitting Nicknames to players");
-    this.io.sockets.emit("shareUnames", Array.from(this.playerNicknames));
+    let tmp = new Map();
+    for (let sockID of this.sockets.keys()){
+      tmp.set(sockID, this.playerNicknames.get(sockID));
+    }
+    this.io.sockets.emit("shareUnames", Array.from(tmp));
   }
 
   /**
