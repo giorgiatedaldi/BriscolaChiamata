@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import './App.css';
-//vedi changes???
 class App extends Component {
 
   constructor() {
@@ -205,8 +204,8 @@ class App extends Component {
         });
       });
 
-      //DisplayMessage HANDLER
-      //Updating messagess and checking if there are unread messages
+      //DisplayMessages HANDLER
+      //Updating messages and checking if there are unread messages
       sock.removeAllListeners('DisplayMessages');
       sock.on("DisplayMessages", (ID, msg) => {
         let temp=[]; 
@@ -324,7 +323,7 @@ class App extends Component {
        
       });
 
-      //gameRestart HANDLER
+      //gameReset HANDLER
       socket.removeAllListeners('gameReset');
       socket.on("gameReset", (cause) => {
         this.buttonBack();
@@ -389,7 +388,7 @@ class App extends Component {
   }
 
   /**
-   * Method to get player's id
+   * Method to get player's nickname
    * 
    * @param {string} ID id of the player whose nickname is requested
    * @returns requested nickname if exists otherwise player's id
@@ -408,7 +407,6 @@ class App extends Component {
   /**
    * Method to manage the view of long nicknames 
    * 
-   * @param {string} nickname 
    * @param {string} ID 
    * @returns managed nickname
    */
@@ -517,9 +515,27 @@ class App extends Component {
     }
     document.getElementById("TextChat").value="";
   }
+  
+   /**
+   * Shows rules
+   */
+  buttonRules(){
+    this.setState({rules:true});
+    document.getElementById("Rules").style.visibility="visible";
+    document.getElementById("Rules").style.top="7%";
+    document.getElementById("Rules").style.left="66%";
+  }
 
   /**
-   * Method to ask the server which players has at least a winning hand, in order to display the card's back
+   * Hides rules
+   */
+  buttonBack(){
+    this.setState({rules:false});
+    document.getElementById("Rules").style.visibility="hidden";
+  }
+
+  /**
+   * Method to ask the server which players have at least a winning hand, in order to display the card's deck
    */
   isDeck(){
     if(this.state.scoreDeck!==null && this.state.scoreDeck.length>0 && !this.state.matchIsOver){
@@ -561,7 +577,7 @@ class App extends Component {
   }
 
   /**
-   * Methods to order cards according to types and values
+   * Method to order cards according to types and values
    */
   shuffleCards(){
     let cards=this.state.cards;
@@ -613,7 +629,7 @@ class App extends Component {
   }
 
   /**
-   * Chat's render
+   * Chat render
    */
   renderChat(){
     let visibleChat=null;
@@ -694,7 +710,7 @@ class App extends Component {
         cards = <div id="MyCards">{entries}</div>;
     } 
     else if (myCards !== null){
-          //Giving card unplayable to players until the auction's over
+          //Giving card unplayable to players
           if (this.state.briscola===null) {
             let entries = myCards.map((c)=> 
             <button id={"CardsNotInUse"+myCards.indexOf(c)} >
@@ -731,7 +747,7 @@ class App extends Component {
   }
 
   /**
-   * Auction's render
+   * Auction render
    */
   renderAuction(){
     let myCards = this.state.cards;
@@ -792,7 +808,7 @@ class App extends Component {
             auction = <div id="Auction">Hai vinto l'asta chiamando un {this.state.briscola[0]} di {this.state.briscola[1]} a {this.state.auctionResult[2]}</div>;
           }
         }
-        //Building the graphics for the caller, with the card called and the crown image
+        //Building the graphics for the caller, with the card called, the final auction's points and the crown image
         let pl=[];
         if (!this.state.matchIsOver && this.state.allNicknames!==null && this.state.briscola !== null && this.state.briscola.length===3 && this.state.myNicknamesOrder!==null){
           let index = null;
@@ -832,14 +848,16 @@ class App extends Component {
       let baloon=null;
       for (let i=0; i<this.state.allNicknames.length; i++) {
         ind = this.state.myNicknamesOrder.indexOf(this.state.allNicknames[i][1]);
-        //Displaying who's playing and what card's playing
+        //Displaying who's calling and what card's calling
         if (this.state.allNicknames[i][0]===this.state.currentAuction[0]){
           imcalling="IMCalling"+ind;
           baloon="Baloon"+ind;
           offer.push(<img id={baloon} src={process.env.PUBLIC_URL+"vignetta"+ind+".png"} alt="vimg" width="10%"></img>);
           if (this.state.currentAuction[2]<61){
             offer.push(<div id={imcalling}>{cardNames[this.state.currentAuction[1]-1]}!</div>); 
-          } else{
+          } 
+          //Displaying also the auction's points
+          else{
             offer.push(<div id={imcalling}>{cardNames[this.state.currentAuction[1]-1]} a {this.state.currentAuction[2]}!</div>); 
           }
         }    
@@ -907,7 +925,7 @@ class App extends Component {
   }
 
   /**
-   * Players' avatars and nicknames render
+   * Players' avatar and nickname render
    */
   renderPlayers(){
     let pl=[];  
@@ -975,7 +993,7 @@ class App extends Component {
   }
 
   /**
-   * Render of final scores 
+   * Render of the final scores 
    */
   renderScore(){
     let scores = null;
@@ -1045,7 +1063,7 @@ class App extends Component {
   }
 
   /**
-   * It's your turn to play or not render
+   * "It's your turn to play or not" render
    */
   renderTurn(){
     if (this.state.myTurn && this.state.briscola !== null && this.state.briscola.length === 3 && !this.state.matchIsOver) {
@@ -1069,7 +1087,7 @@ class App extends Component {
   }
 
   /**
-   * Restart button restart
+   * Restart button render
    */
   renderRestartButton(){
     let restartButton = null;
@@ -1083,7 +1101,7 @@ class App extends Component {
   }
 
   /**
-   * Render main title 
+   * Main title render
    */
   renderTitle(){
     if (this.state.cards===null && !this.state.matchIsOver){
@@ -1092,7 +1110,7 @@ class App extends Component {
   }
 
   /**
-   * Render button to order cards
+   * Render the button which order cards
    */
   renderShuffleButton(){
     if (this.state.cards!==null&&this.state.cards.length>1&&!this.state.matchIsOver&&!this.state.shuffle){
@@ -1116,25 +1134,7 @@ class App extends Component {
   }
 
   /**
-   * Shows rules
-   */
-  buttonRules(){
-    this.setState({rules:true});
-    document.getElementById("Rules").style.visibility="visible";
-    document.getElementById("Rules").style.top="7%";
-    document.getElementById("Rules").style.left="66%";
-  }
-
-  /**
-   * Hides rules
-   */
-  buttonBack(){
-    this.setState({rules:false});
-    document.getElementById("Rules").style.visibility="hidden";
-  }
-
-  /**
-   * Render initial images
+   * Render the initial images
    */
   renderImages(){
     let image=[];
