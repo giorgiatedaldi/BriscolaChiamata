@@ -68,8 +68,8 @@ Durante il corso di tutta la partita è sempre possibile visualizzare le regole 
 ## INSTALLAZIONE DEL GIOCO
 ### REQUISITI
 Per poter utilizzare “Briscola in 5 online” è prima di tutto necessario installare:
-Node.js (Installer): https://nodejs.org/it/download/  
-Git: https://git-scm.com/download/
+-[Node.js] (Installer): https://nodejs.org/it/download/  
+-[Git]: https://git-scm.com/download/
 
 ### INSTALLAZIONE DI BRISCOLA IN 5 ONLINE
 Aprire un terminale e digitare i seguenti comandi:
