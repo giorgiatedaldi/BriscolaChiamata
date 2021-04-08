@@ -6,6 +6,8 @@ Il gioco Briscola in 5 (o briscola a chiamata) è una variante della Briscola. L
 ### CONNESSIONE
 Il server è in ascolto e rimane in attesa della connessione di client, che devono essere almeno 5. Nel caso in cui ne risultino di più, i client dal sesto in avanti vengono disconnessi, mentre per gli altri può iniziare la partita.
 
+![Connessione](readme_images/1.png)
+
 A questo punto ogni client può inserire un nickname altrimenti questo sarà settato all’ID della sua socket. Alla ricezione dei primi 5 giocatori il server genera le carte per ciascun giocatore, ma le distribuisce solo dopo che i client premono il pulsante gioca.
 L’ordine di gioco è stabilito in base all’ordine temporale di connessione dei client.
 
