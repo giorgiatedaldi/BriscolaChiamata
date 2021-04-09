@@ -1,10 +1,10 @@
 /**
- * @class Card to define each property of cards.
+ * @class Card to define each properties of cards.
  */
 class Card {
 
     /**
-     * Card constructor
+     * Card's constructor
      * 
      * @param {string} type  The card's type: Bastoni, Coppe, Denari or Spade 
      * @param {string} value The card's value: from 1 to 10
@@ -15,6 +15,10 @@ class Card {
         this.value = value;
         this.score = score;
     }
+
+    /*printCard() {
+        console.log("%s, %s, %s\n", this.type, this.value, this.score);
+    }*/
 }
 
 /**
@@ -23,7 +27,7 @@ class Card {
 class Deck {
 
     /**
-     * Deck constructor
+     * Deck's constructor
      */
     constructor() {
         this.types = ["Denari", "Bastoni", "Spade", "Coppe"];
@@ -53,7 +57,7 @@ class Deck {
 class Player {
 
     /**
-     * Player constructor
+     * Player's constructor
      * 
      * @param {string} id Player's id is equal to socket's id
      * @property {Array.<Card>} myCards Player's cards'
@@ -70,13 +74,13 @@ class Player {
 class Game { 
 
     /**
-     * Game constructor
+     * Game's constructor
      * 
      * @param {Array.<string>} playersID Array of players' id (sockets' id)
      * @property {Deck} deck Match's deck
      * @property {Array.<Player>} players Array of objects Player
      * @property {Array} currentAuction Array with information about current auction: player's id, card's value and points to win 
-     * @property {Array} briscola Array with information about the final briscola: card's value and type
+     * @property {Array} briscola Array with information about final briscola: card's value and type
      * @property {Array.<string>} callerTeam Array of player's id who's making the call and his partner
      * @property {Array.<string>} opponentTeam Array of others players' id 
      * @property {Array.<string>} currentTurn Array of players' order of current turn
@@ -109,6 +113,10 @@ class Game {
                 this.players[j].myCards.push(this.deck.cards.pop());
             }
         }
+        /*for (let j = 0; j<this.players.length; j++){
+            //console.log(this.players[j].myCards);
+            
+        }*/
         return this.players; 
     }
 
@@ -118,7 +126,7 @@ class Game {
     setTeams() {
         this.callerTeam.push(this.currentAuction[0]);
         
-        //Defines the first team: the one with the player who won the auction
+        //Define the first team: the one with the player who won the auction
         for (let i=0; i<this.players.length; i++) {
             let temp = this.players[i];
             for (let j=0; j<temp.myCards.length; j++) {
@@ -129,7 +137,7 @@ class Game {
             }
         }
 
-        //Defines the opponent team
+        //Define the opponent team
         for (let i=0; i<this.players.length; i++) {
             if (this.callerTeam.indexOf(this.players[i].id) === -1){
                 this.opponentTeam.push(this.players[i].id);
@@ -175,7 +183,7 @@ class Game {
         let maxToSelect = new Map();
 
         //The value of the card also depends on its score. A map is created containing a list of players' id (key) and 
-        // an "absolute" cards' grade (value) to order them according to both score and value
+        // an 'absolute' cards' grade (value) to order them according to both score and value
         for (var [playerId, card] of this.currentHand.entries()) {
             if (card['type'] === type) {
                 maxToSelect.set(playerId, card['score']*3+card['value']);
@@ -200,12 +208,14 @@ class Game {
      * Method to establish which player won the hand
      * 
      * @property {Array} maxBriscola The highest briscola on table
-     * @property {Array} maxCardOfFirstType The highest card with type equal to the first one
+     * @property {Array} maxCardOfFirstType The highest card with type equals to the first one
      * @returns an array with the player's id and its 'winning' card
      */
     setWinnerHand() {
         if (this.currentHand.size === 5) {
             let maxBriscola = this.selectMax(this.briscola[1], this.currentHand);
+            //console.log('maxbriscola: ');
+            //console.log(maxBriscola);
             if (maxBriscola.length === 0) {
                 let maxCardOfFirstType = this.selectMax(this.currentHand.values().next().value['type'], this.currentHand);
                 console.log('maxvalue: ');
@@ -237,7 +247,7 @@ class Game {
      * Method to upgrade the scores of the 'general' match according to the result of the actual match.
      * The sum of players' general scores must be 0 after every match.
      * 
-     * @param {Array.<Array>} callerScores In the position 0 of every array there is the player's id, while in the 1 one the score of this match
+     * @param {Array.<Array>} callerScores In the position 0 of every array there is the player's id, while in the 1 one, the score of this match
      * @param {Array.<Array>} opponentScores In the position 0 there is the player's id, while in the position 1 the score of this match
      * @param {Map} matchScores Map with players' id and scores of the 'general' match which has to be upgraded
      */
@@ -247,7 +257,8 @@ class Game {
         let callerPoint = 0;
         let shutout = 4;
 
-        //Computing the score of caller team and comparing it to the point called during the auction to verify if the team has won or lost
+        //Computing the score of caller team and comparing it to the point called during the auction to verify if the
+        //team has won or lost
         for (let i=0; i<callerScores.length; i++) {
             totCaller += callerScores[i][1];
         }

@@ -21,12 +21,12 @@ const module_briscola = require('./Briscola');
 game = module_briscola.game;
 
 /**
- * @class ServerBriscola to handle communications between clients and server
+ * @class ServerBriscola to handle communications between cliets and server
  */
 class ServerBriscola {
 
   /**
-   * ServerBriscola constructor
+   * ServerBriscola's constructor
    * 
    * @param {number} port Port
    * @property {numer} disconnectedCounter Number of disconnected clients
@@ -34,16 +34,16 @@ class ServerBriscola {
    * @property {Map} sockets Map with sockets' id (key) and sockets themselves (value)
    * @property {Game} match New match
    * @property {Player} players Player's array
-   * @property {numer} auctionTurn Index to handle auction's turn
-   * @property {Array.<string>} playersPassed Array of id of players who passed during the auction
+   * @property {numer} auctionTurn Index to handle acution's turn
+   * @property {Array.<string>} playersPassed Array of id od players who passed during the auction
    * @property {boolean} gameStared Indicates if the game is started or not
    * @property {number} readyPlayers Number of players ready to play
    * @property {number} countHands Counter to end the game once it's equal to 8
    * @property {Map} finalResults Map of players' id (key) and score (value) at the end of every match
-   * @property {Map} playerNicknames Map with players' id (key) and players' nickname (value)
+   * @property {Map} playerNicknames Map with players' id (key) and players' nicknames (value)
    * @property {number} restartRequests Players who have requestd to play again
    * @property {Map} matchScores Map with players' id and scores of the 'general' match
-   * @property {Array.<number>} differentNickname Array to differentiate players' nicknames if there are some copies
+   * @property {Array.<number>} differentNickname Array to differntiate players' nicknames if there are some copies
    * @property {Boolean} sixth Boolean to manage the connections from sixth onwards
    */
   constructor(port) {
@@ -106,7 +106,7 @@ class ServerBriscola {
   }
 
   /**
-   * Method to inizialize the server
+   * Method to inizialize the server.
    */
   createServer() {
     console.log("Server socket:",this.socketID);
@@ -177,14 +177,15 @@ class ServerBriscola {
       this.restartRequests = 0;
       this.differentNickname=[1,2,3,4];
       
-      
+
+      //debug
       console.log("\n--------------PLAYER CARDS:-------------");
       for (let pl of players){
         console.log("ID: ",pl.id,"\nCards:\n",pl.myCards);
       }
       console.log("\n--------------END OF PLAYER CARDS-------------\n");
 
-      //Before installing any handler, other ones with the same name are uninstalled in order to avoid 
+      //Before installing any handler, other ones with the same name are uninstalled. This in order to avoid 
       //double placements
       console.log("\n---------------INSTALLING HANDLERS------------\n");
       for (var [clientID, clientSocket] of this.sockets.entries()) {
@@ -205,7 +206,7 @@ class ServerBriscola {
 
           for (let i = 0; i < players.length; i++) {
             if (player_id == players[i].id) {
-              //Sending cards to every player
+              //sending cards to every player
               this.sockets.get(player_id).emit('giveCards', players[i].myCards);
               console.log('\n--------Giving card to player %s on socket %s: ---------', player_id, this.sockets.get(player_id).id);
               console.log(players[i].myCards);
@@ -226,7 +227,7 @@ class ServerBriscola {
 
   /**
    * Method used to communicate to clients, once the hand is over, who's the winner.
-   * Here is also managed the request to look at the last hand of every player
+   * Here is also managed the request to look at the last hand of every players.
    */
   deck(){
     for (var clientSocket of this.sockets.values()) {
@@ -238,7 +239,7 @@ class ServerBriscola {
       });
 
       //lastHand HANDLER
-      //idLastHand is the player's id whose last hand wants to be seen, while idApplicant is who's asking for it
+      // idLastHand is the player's id whose last hand wants to be seen, while idApplicant is who's asking for it
       clientSocket.removeAllListeners('lastHand');
       clientSocket.on('lastHand', (idLastHand, idApplicant) => {
         this.sockets.get(idLastHand).emit('requestLastHand', idApplicant);
@@ -258,7 +259,7 @@ class ServerBriscola {
   }
 
   /**
-   * Method which manages the chat. Once a message is received from a socket, it's broadcasted to all the others
+   * Method which manages the chat. Once a messages is received from a socket, it's broadcasted to all the others
    */
   chat(){
     for (var clientSocket of this.sockets.values()) {
@@ -316,7 +317,7 @@ class ServerBriscola {
   updateAuction() {
     let nextPlayer = Array.from(this.sockets.keys())[this.auctionTurn];
 
-    //If a player passes during the auction he will automatically make a 0 offer to the server, so if the last player who did an offer
+    //If a player pass during the auction he will automatically make a 0 offer to the server, so if the last player who did an offer
     //is equal to the player who has to play the auction is over
     if (this.match.currentAuction[0] == nextPlayer){
       console.log("Auction over: %s %s %s", this.match.currentAuction[1],nextPlayer,this.match.currentAuction[2]);
@@ -372,7 +373,7 @@ class ServerBriscola {
         this.readyPlayers += 1;
         console.log("Player %s is ready, %s ready now", ID, this.readyPlayers);
         if (this.readyPlayers === 5) {
-          //Communicates to clients the actual 'winning offer'
+          //communicates to clients the actual 'winning offer'
           for (let [clientID,clientSocket] of this.sockets.entries()) {
             clientSocket.emit("sendOffer", this.match.currentAuction[0], this.match.currentAuction[1],
                               Array.from(this.sockets.keys())[this.auctionTurn],
@@ -386,7 +387,7 @@ class ServerBriscola {
       //putOfferType HANDLER
       clientSocket.removeAllListeners('putOfferType');
       clientSocket.on("putOfferType", (value, ID, type) => {
-        //Auction's over and the winner decides the briscola
+        //Auction's over and the winner decided the briscola
         this.match.setBriscola(value,type);
         console.log("Player %s set briscola to %s of %s", ID, value, type);
         this.io.sockets.emit("setBriscola", value, ID, type);
@@ -401,7 +402,7 @@ class ServerBriscola {
 
   /**
    * Manages the end of the match by communicating it to clients and sending them individual and team scores.
-   * Manages also the match restart if all the five clients agree
+   * Manges also the match restart if all the five clients agree
    */
   endOfMatch(){
     this.socketID = [];
@@ -463,7 +464,7 @@ class ServerBriscola {
   }
 
   /**
-   * Managing the next hand: it is checked if it's the last one, otherwise the order of the new hand is setted.
+   * Managing the next hand: it's checked if it's the last one, otherwise the order of the new hand is setted.
    * 
    * @param {Array} winnerHand Array with the player's id and its 'winning' card
    * @returns 
@@ -508,7 +509,7 @@ class ServerBriscola {
       clientSocket.removeAllListeners('playCard');
       clientSocket.on("playCard", (myId, playedCard) => {
 
-        //Everytime a card is played the currentHand's array is updated
+        //Everytime a card is played the currentHand's array  is updated
         console.log("Client %s played card %s %s", myId, playedCard.value, playedCard.type);
         this.match.currentHand.set(myId, playedCard);
         this.io.sockets.emit("cardPlayed", myId, playedCard);
@@ -530,7 +531,7 @@ class ServerBriscola {
   }
 
   /**
-   * Method to communicate a specific client that's its turn to play
+   * Method communicate a specific client that's its turn to play
    * 
    * @param {string} ID player's id
    */
