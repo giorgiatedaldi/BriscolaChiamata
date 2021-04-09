@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import './App.css';
+
 class App extends Component {
-  /**
-     * Constructor
-   */
+
   constructor() {
     super();
     this.all_cards = [1,3,10,9,8,7,6,5,4,2];
@@ -12,22 +11,22 @@ class App extends Component {
     this.state = {
       endpoint: "localhost:4001",
       color: 'rgb(145, 208, 246)',
-      cards: null, //Player's card
-      priv_socket: null, //Player's socket
-      available_card_values:[], //Cards available for the auction
-      myTurn: false, //Indicates if it's the player's turn
-      hasPassed: false, //Indicates if the player has passed
+      cards: null, //player's card
+      priv_socket: null, //player's socket
+      available_card_values:[], //cards available for the auction
+      myTurn: false, //indicates if it's the player's turn
+      hasPassed: false, //indicates if it's the player's passed
       auctionResult: [], //It contains player's id who won the auction, card's value and points
       winningPts: 60, //Points to win by default are 60
       briscola: null, //It contains card's value, player's id who won the auction and card's value
       restartReason: null, //Reason of restarting the match
       everybodyReady: false, //True if 5 clients are connected
-      scoreDeck: [], //Player's deck: it contains all the won hands by the player
+      scoreDeck: [], //Player's deck: contains all hands won by the player
       hand: [], //Everytime a player plays a card, this one is inserted in the array
       handIds: [], //It contains the players' id who are playing cards, in order
       matchIsOver: false, //Indicates the end of a match
       teamsScore: null,  //It contains 2 array, each one contains information about the final scores of players of both teams
-      nickname: null, //Player's nickname
+      nickname: null, //player's nickname
       allNicknames: null, //Map with player's id (key) and nickname (value)
       matchScores: null, //Scores of the 'general' match
       waitingForRestart: false, //True once the player agrees to play again
@@ -37,14 +36,12 @@ class App extends Component {
       currentAuction:[], //Actual winning auction
       messages:[], //It contains all messages
       handsWinners:[], //It contains all hands' winners
-      requiredLastHand: [], //Last hand that has to be shown, if requested by the player
-      buttonChat:false, //True if clicked, to open the chat 
+      requiredLastHand: [], //Last hand that had to be shown, requested by the player
+      buttonChat:false, //True once every client has received its cards
       notification:false, //True if there are unread messages
       rules:false, //True if the rules have to be displayed
       shuffle:false //True if player decides to order cards
-    };
-    document.getElementById("Rules").style.visibility="hidden";
-    
+    };    
   }
   
   /**
@@ -63,8 +60,9 @@ class App extends Component {
       }
 
       
-      //giveCards HANDLER
-      //Setting player's cards and informing server he's ready to send offers
+   
+      //giveCard HANDLER
+      //Setting player's card and informing server it's ready to send offers
       sock.removeAllListeners('giveCards');
       sock.on('giveCards', (yourCards) => {
         this.setState({
@@ -103,7 +101,7 @@ class App extends Component {
         let cAuction=[];
         cAuction.push(currentID, currentOffer,points);
         
-        //Updating the available cards for the auction
+        //Updating the available card for the auction
         this.setState({
           available_card_values: tmp, 
           currentAuction: cAuction
@@ -128,7 +126,7 @@ class App extends Component {
       });
 
       //setBriscola HANDLER
-      //Updating the briscola once the player who called chooses briscola's type
+      //Updating the briscola once the player who called choose briscola's type
       sock.removeAllListeners('setBriscola');
       sock.on("setBriscola", (value, ID, type) => {
         this.setState({
@@ -205,8 +203,8 @@ class App extends Component {
         });
       });
 
-      //DisplayMessages HANDLER
-      //Updating messages and checking if there are unread messages
+      //DisplayMessage HANDLER
+      //Updating messagess and checking if there are unread messages
       sock.removeAllListeners('DisplayMessages');
       sock.on("DisplayMessages", (ID, msg) => {
         let temp=[]; 
@@ -324,7 +322,7 @@ class App extends Component {
        
       });
 
-      //gameReset HANDLER
+      //gameRestart HANDLER
       socket.removeAllListeners('gameReset');
       socket.on("gameReset", (cause) => {
         this.buttonBack();
@@ -359,7 +357,6 @@ class App extends Component {
         });
       });
       this.setState({priv_socket: socket});
-      document.getElementById("Rules").style.visibility="hidden";
     });
   }
   
@@ -389,7 +386,7 @@ class App extends Component {
   }
 
   /**
-   * Method to get player's nickname
+   * Method to get player's id
    * 
    * @param {string} ID id of the player whose nickname is requested
    * @returns requested nickname if exists otherwise player's id
@@ -408,6 +405,7 @@ class App extends Component {
   /**
    * Method to manage the view of long nicknames 
    * 
+   * @param {string} nickname 
    * @param {string} ID 
    * @returns managed nickname
    */
@@ -516,27 +514,9 @@ class App extends Component {
     }
     document.getElementById("TextChat").value="";
   }
-  
-   /**
-   * Shows rules
-   */
-  buttonRules(){
-    this.setState({rules:true});
-    document.getElementById("Rules").style.visibility="visible";
-    document.getElementById("Rules").style.top="7%";
-    document.getElementById("Rules").style.left="66%";
-  }
 
   /**
-   * Hides rules
-   */
-  buttonBack(){
-    this.setState({rules:false});
-    document.getElementById("Rules").style.visibility="hidden";
-  }
-
-  /**
-   * Method to ask the server which players have at least a winning hand, in order to display the card's deck
+   * Method to ask the server which players has at least a winning hand, in order to display the card's back
    */
   isDeck(){
     if(this.state.scoreDeck!==null && this.state.scoreDeck.length>0 && !this.state.matchIsOver){
@@ -578,7 +558,7 @@ class App extends Component {
   }
 
   /**
-   * Method to order cards according to types and values
+   * Methods to order cards according to types and values
    */
   shuffleCards(){
     let cards=this.state.cards;
@@ -630,7 +610,7 @@ class App extends Component {
   }
 
   /**
-   * Chat render
+   * Chat's render
    */
   renderChat(){
     let visibleChat=null;
@@ -711,7 +691,7 @@ class App extends Component {
         cards = <div id="MyCards">{entries}</div>;
     } 
     else if (myCards !== null){
-          //Giving card unplayable to players
+          //Giving card unplayable to players until the auction's over
           if (this.state.briscola===null) {
             let entries = myCards.map((c)=> 
             <button id={"CardsNotInUse"+myCards.indexOf(c)} >
@@ -748,7 +728,7 @@ class App extends Component {
   }
 
   /**
-   * Auction render
+   * Auction's render
    */
   renderAuction(){
     let myCards = this.state.cards;
@@ -809,7 +789,7 @@ class App extends Component {
             auction = <div id="Auction">Hai vinto l'asta chiamando un {this.state.briscola[0]} di {this.state.briscola[1]} a {this.state.auctionResult[2]}</div>;
           }
         }
-        //Building the graphics for the caller, with the card called, the final auction's points and the crown image
+        //Building the graphics for the caller, with the card called and the crown image
         let pl=[];
         if (!this.state.matchIsOver && this.state.allNicknames!==null && this.state.briscola !== null && this.state.briscola.length===3 && this.state.myNicknamesOrder!==null){
           let index = null;
@@ -849,16 +829,14 @@ class App extends Component {
       let baloon=null;
       for (let i=0; i<this.state.allNicknames.length; i++) {
         ind = this.state.myNicknamesOrder.indexOf(this.state.allNicknames[i][1]);
-        //Displaying who's calling and what card's calling
+        //Displaying who's playing and what card's playing
         if (this.state.allNicknames[i][0]===this.state.currentAuction[0]){
           imcalling="IMCalling"+ind;
           baloon="Baloon"+ind;
           offer.push(<img id={baloon} src={process.env.PUBLIC_URL+"vignetta"+ind+".png"} alt="vimg" width="10%"></img>);
           if (this.state.currentAuction[2]<61){
             offer.push(<div id={imcalling}>{cardNames[this.state.currentAuction[1]-1]}!</div>); 
-          } 
-          //Displaying also the auction's points
-          else{
+          } else{
             offer.push(<div id={imcalling}>{cardNames[this.state.currentAuction[1]-1]} a {this.state.currentAuction[2]}!</div>); 
           }
         }    
@@ -926,7 +904,7 @@ class App extends Component {
   }
 
   /**
-   * Players' avatar and nickname render
+   * Players' avatars and nicknames render
    */
   renderPlayers(){
     let pl=[];  
@@ -994,7 +972,7 @@ class App extends Component {
   }
 
   /**
-   * Render of the final scores 
+   * Render of final scores 
    */
   renderScore(){
     let scores = null;
@@ -1064,7 +1042,7 @@ class App extends Component {
   }
 
   /**
-   * "It's your turn to play or not" render
+   * It's your turn to play or not render
    */
   renderTurn(){
     if (this.state.myTurn && this.state.briscola !== null && this.state.briscola.length === 3 && !this.state.matchIsOver) {
@@ -1088,7 +1066,7 @@ class App extends Component {
   }
 
   /**
-   * Restart button render
+   * Restart button restart
    */
   renderRestartButton(){
     let restartButton = null;
@@ -1102,7 +1080,7 @@ class App extends Component {
   }
 
   /**
-   * Main title render
+   * Render main title 
    */
   renderTitle(){
     if (this.state.cards===null && !this.state.matchIsOver){
@@ -1111,7 +1089,7 @@ class App extends Component {
   }
 
   /**
-   * Render the button which order cards
+   * Render button to order cards
    */
   renderShuffleButton(){
     if (this.state.cards!==null&&this.state.cards.length>1&&!this.state.matchIsOver&&!this.state.shuffle){
@@ -1135,7 +1113,126 @@ class App extends Component {
   }
 
   /**
-   * Render the initial images
+   * Render game's rules
+   */
+  renderRules(){
+    let rules=null;
+    if (this.state.rules){
+      rules = (
+      <div id="Rules"><p style={{color:"red"}}><b>INTRODUZIONE</b></p>
+      Le regole di base per la vincita delle diverse mani sono le stesse della classica Briscola in quattro, la variante in cinque, però, si differenzia principalmente per l’introduzione di una parte iniziale chiamata “<b>asta</b>”,
+      durante la quale il giocatore che fa la migliore offerta (“<b>comandante</b>”)
+      sceglie quella che sarà la briscola. <br></br><br></br>
+      I giocatori vengono quindi divisi in due squadre: quella “<b>chiamante</b>”,
+      composta da comandante ed eventuale “<b>socio</b>” (il giocatore che possiede la carta chiamata), e quella “<b>avversaria</b>”,
+      di cui fanno parte tutti gli altri giocatori.<br></br><br></br>
+      <p style={{color:"red"}}><b>ASTA</b></p>
+      Il mazziere distribuisce otto carte a testa, in senso antiorario, partendo dal giocatore alla sua destra. I giocatori, a questo punto, esaminano le loro carte, con lo scopo di valutare quale sia il seme in cui risultano più forti, e se convenga
+      chiamare una delle carte “<b>mancanti</b>”
+      di quel seme.<br></br><br></br> 
+      Il giocatore, se in possesso di molte briscole, può decidere anche di chiamare una delle carte tra quelle possedute (“<b>chiamata
+      in mano</b>”), cosciente, però, di essere in squadra da solo. <br></br><br></br>
+      Durante l’asta, quindi, a turno, ogni giocatore ha la possibilità di “chiamare” (senza specificare il seme) o di “<b>passare</b>”:
+      l’asta procede in senso antiorario ed in modo decrescente, cioè si possono chiamare solo carte progressivamente più basse secondo l’ordine: Asso, Tre, Re, Cavallo, Fante, Sette, Sei, Cinque, Quattro, Due. Essendo il Due la carta più bassa chiamabile, se più
+      giocatori risultano essere intenzionati nel proseguimento dell’asta, l’unica possibilità è quella di alzare il punteggio di vittoria: per vincere non saranno più necessario arrivare a 60 ma, al nuovo punteggio “<b>offerto</b>”. <br></br><br></br>
+      Il giocatore in questione, sta dichiarando che, la squadra chiamante, dovrà arrivare ad almeno 64 punti per vincere. I giocatori che passano, invece, vengono esclusi dal proseguimento dell’asta. Quest’ultima termina nel momento in cui tutti i
+      giocatori, tranne uno, il futuro comandante, passano. <br></br><br></br>
+      Una volta che l’asta è terminata, il comandante dichiara pubblicamente il seme della briscola. <br></br><br></br>
+      <p style={{color:"red"}}><b>SVOLGIMENTO DEL GIOCO</b></p>
+      Il gioco comincia e procede secondo le regole della Briscola, partendo dal giocatore alla destra del mazziere, a prescindere dal vincitore dell’asta, con la differenza che le due squadre non saranno note finché il socio non si sarà rivelato giocando
+      la carta chiamata, oppure, adottando un comportamento di gioco che evidenzi il suo stato.<br></br><br></br>
+      <p style={{color:"red"}}><b>GESTIONE DEI PUNTEGGI</b></p>
+      Una volta che la partita è finita, vengono calcolati i punti totali di entrambe le squadre. Il match risulta vinto dalla squadra chiamante se sono stati realizzati almeno 60 punti, o nel caso di chiamata a Due, i punti stabiliti durante l’asta.<br></br><br></br>
+      Il punteggio generale attribuito a ciascun giocatore dipende strettamente da questi ultimi. <br></br><br></br>
+      Nel caso in cui una delle due squadre realizzi tutti e 120 i punti, si parla di “<b>volata</b>”.<br></br><br></br>
+      Distinguiamo le seguenti casistiche in caso di vittoria della squadra chiamante:<br></br><br></br>
+      <table>
+        <tr>
+          <td>&nbsp;</td>
+          <td style={{fontWeight:"bold",fontSize: "15px"}}>Comandante</td>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>Socio</td>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>Altri giocatori (x3)</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>Partita normale</td>
+          <td>+2</td>
+          <td>+1</td>
+          <td>-1</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight: "bold", fontSize: "15px"}}>2 a 70 punti</td>
+          <td>+4</td>
+          <td>+2</td>
+          <td>-2</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight:"bold", fontSize:"15px"}}>2 a 80 punti</td>
+          <td>+6</td>
+          <td>+3</td>
+          <td>-3</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight: "bold", fontSize: "15px"}}>Volata</td>
+          <td>+8</td>
+          <td>+4</td>
+          <td>-4</td>
+        </tr>
+      </table>
+      
+      <br></br><br></br>
+      Nel caso in cui il comandante si chiami in mano i punteggi variano nel seguente modo:<br></br><br></br>
+      <table>
+        <tr>
+          <td>&nbsp;</td>
+          <td style={{fontWeight: "bold",fontSize: "15px"}}>Comandante</td>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>Altri giocatori (x4)</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight: "bold", fontSize: "15px"}}>Partita normale</td>
+          <td>+4</td>
+          <td>-1</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>2 a 70 punti</td>
+          <td>+8</td>
+          <td>-2</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>2 a 80 punti</td>
+          <td>+12</td>
+          <td>-3</td>
+        </tr>
+        <tr>
+          <td style={{fontWeight:"bold", fontSize: "15px"}}>Volata</td>
+          <td>+16</td>
+          <td>-4</td>
+        </tr>
+      </table>
+
+      <br></br><br></br>
+      Nel caso in cui, invece, a vincere sia la squadra avversaria, tutti i punteggi precedenti sono di segno opposto.
+      </div>);
+      
+    }
+    return rules;
+  }
+
+  /**
+   * Shows rules
+   */
+  buttonRules(){
+    this.setState({rules:true});
+  }
+
+  /**
+   * Hides rules
+   */
+  buttonBack(){
+    this.setState({rules:false});
+  }
+
+  /**
+   * Render initial images
    */
   renderImages(){
     let image=[];
@@ -1176,6 +1273,7 @@ class App extends Component {
     let chatButton=this.renderButtonChat();
     let notification=this.renderNotification();
     let buttonRules=this.renderButtonRules();
+    let rules = this.renderRules();
     let shuffleButton=this.renderShuffleButton();
 
     return (
@@ -1201,6 +1299,7 @@ class App extends Component {
         {notification}
         {buttonRules}
         {shuffleButton}
+        {rules}
       </div>
     );
   }

@@ -1607,6 +1607,8 @@ background-color: whitesmoke;
 
 #Rules{
   background-color: rgba(255, 250, 204, 0.75);
+  left: 66%;
+  top: 7%;
   position: absolute;
   width: 40%;
   height: 88%;
