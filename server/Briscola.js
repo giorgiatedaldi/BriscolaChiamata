@@ -241,6 +241,9 @@ class Game {
         else if (points < 120) {
             return 3;
         }
+        else if (points == 120) {
+            return 4;
+        }
     }
 
     /**
