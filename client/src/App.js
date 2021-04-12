@@ -167,7 +167,9 @@ class App extends Component {
       sock.on("matchOver", () => {
         this.setState({
           matchIsOver: true, 
-          cards: null});
+          cards: null,          
+          requiredLastHand: []
+        });
         let totalResult=0;
         for (let c of this.state.scoreDeck)
         {
